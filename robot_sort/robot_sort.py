@@ -92,12 +92,90 @@ class SortingRobot:
         """
         return self._light == "ON"
 
+# ****************The robot has exactly one bit of memory: its light. Why is this important?
+
+# You may use any pre-defined robot methods.
+# You may NOT modify any pre-defined robot methods.
+# You may use logical operators. (if, and, or, not, etc.)
+# You may use comparison operators. (>, >=, <, <=, ==, is, etc.)
+# You may use iterators. (while, for, break, continue)
+# You may NOT store any variables. (=)
+# You may NOT access any instance variables directly. (self._anything)
+# You may NOT use any Python libraries or class methods. (sorted(), etc.)
+# You may define robot helper methods, as long as they follow all the rules.
+
+        """
+        Compare the held item with the item in front of the robot:
+        If the held item's value is greater, return 1.
+        If the held item's value is less, return -1.
+        If the held item's value is equal, return 0.
+        If either item is None, return None.
+        """
+
+    def compare_item_right(self):
+        # inventory is currently empty, pickup item, move to the right
+        self.swap_item()
+        self.move_right()
+
+        if self.compare_item() == 1:
+            # if held item's value is greater, swap items and move smaller item to the left
+            self.swap_item()
+            self.move_left()
+            self.swap_item()
+            # item has been moved, turn light off and keep moving along
+            self.move_right()
+            self.set_light_off()
+        
+        else:
+            # held items value is smaller, put it back to the left where it was and keep moving
+            self.move_left()
+            self.swap_item()
+            self.move_right()
+
+    def compare_item_left(self):
+        # basically the opposite of method above, inventory should be empty, move left and pickup item
+        self.swap_item()
+        self.move_left()
+        if self.compare_item() == -1:
+            # if held item's value is less, swap items and move larger item to the right
+            self.swap_item()
+            self.move_right()
+            self.swap_item()
+            # item has been moved, inv is empty, turn light off, keep moving
+            self.move_left()
+            self.set_light_off()
+
+        else:
+            # held item is larger, put it back and keep moving left
+            self.move_right()
+            self.swap_item()
+            self.move_left()
+
+    
+    def trigger_move(self):
+        #compareRight should start immediately, compareLeft should only happen if light has been turned off,
+        #  meaning an item has been swapped and list needs to be run through again
+        self.set_light_on()
+        while self.can_move_right():
+            self.compare_item_right()
+
+        if self.light_is_on() == False:
+            while self.can_move_left():
+                self.compare_item_left()
+
+
+
+
+
     def sort(self):
         """
         Sort the robot's list.
         """
         # Fill this out
-        pass
+        while self.light_is_on() == False:
+            # if the light is not on it will trigger movement to the left or right
+            # if the light is on at the end of movement, list should be sorted and cycle will end
+            self.trigger_move()
 
 
 if __name__ == "__main__":
